@@ -6,8 +6,7 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <stdint.h>
-
-#include <stdint.h>
+#include <netdb.h> // Para getaddrinfo()
 
 // Tipo de estructuras
 #define TYPE_A 1
@@ -47,16 +46,29 @@ int main() {
         return 1;
     }
 
+    // Resolución de la URL del servidor a una dirección IP
+    struct addrinfo hints;
+    struct addrinfo *serverInfo;
+
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_INET;
+    hints.ai_socktype = SOCK_STREAM;
+
+    int status = getaddrinfo("unaware-swordfish-dsval.koyeb.app", "8000", &hints, &serverInfo);
+    if (status != 0) {
+        fprintf(stderr, "Error al resolver la dirección: %s\n", gai_strerror(status));
+        close(clientSocket);
+        return 1;
+    }
+
     // Configurar la dirección del servidor
-    struct sockaddr_in serverAddr;
-    serverAddr.sin_family = AF_INET;
-    serverAddr.sin_port = htons(8000);
-    serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1"); // Cambia la IP por la del servidor si es remoto
+    struct sockaddr_in *serverAddr = (struct sockaddr_in *)serverInfo->ai_addr;
 
     // Conectar al servidor
-    if (connect(clientSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) == -1) {
+    if (connect(clientSocket, (struct sockaddr *)serverAddr, sizeof(struct sockaddr_in)) == -1) {
         perror("Error al conectar con el servidor");
         close(clientSocket);
+        freeaddrinfo(serverInfo);
         return 1;
     }
 
@@ -75,22 +87,23 @@ int main() {
     struct TypeC sendDataC = { "Hello"};
 
     // Enviar estructura TypeA al servidor
-    uint8_t type = 1;
+    uint8_t type = TYPE_A;
     send(clientSocket, (char *)&type, sizeof(uint8_t), 0);
     send(clientSocket, (char *)&sendDataA, sizeof(struct TypeA), 0);
 
     // Enviar estructura TypeB al servidor
-    type = 2;
+    type = TYPE_B;
     send(clientSocket, (char *)&type, sizeof(uint8_t), 0);
     send(clientSocket, (char *)&sendDataB, sizeof(struct TypeB), 0);
 
     // Enviar estructura TypeC al servidor
-    type = 3;
+    type = TYPE_C;
     send(clientSocket, (char *)&type, sizeof(uint8_t), 0);
     send(clientSocket, (char *)&sendDataC, sizeof(struct TypeC), 0);
 
-    // Cerrar el socket
+    // Cerrar el socket y liberar la memoria de la información del servidor
     close(clientSocket);
+    freeaddrinfo(serverInfo);
 
     return 0;
 }
