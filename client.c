@@ -54,7 +54,7 @@ int main() {
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
 
-    int status = getaddrinfo("unaware-swordfish-dsval.koyeb.app", "8000", &hints, &serverInfo);
+    int status = getaddrinfo("unaware-swordfish-dsval.koyeb.app", "443", &hints, &serverInfo);
     if (status != 0) {
         fprintf(stderr, "Error al resolver la dirección: %s\n", gai_strerror(status));
         close(clientSocket);

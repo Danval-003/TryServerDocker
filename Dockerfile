@@ -1,24 +1,22 @@
-# Usar una imagen base de Ubuntu
+# Usar una imagen base de Linux
 FROM ubuntu:latest
 
-# Actualizar los repositorios e instalar las herramientas necesarias para compilar
+# Instalar las herramientas y dependencias necesarias
 RUN apt-get update && \
-    apt-get install -y \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
+    apt-get install -y gcc \
+                       make \
+                       libc6-dev \
+                       && \
+    rm -rf /var/lib/apt/lists/*
 
-# Copiar el código fuente del servidor al directorio de trabajo en el contenedor
-COPY serverTry.c /usr/src/server/
+# Copiar tu código fuente al contenedor
+COPY serverTry.c /app/server.c
 
-# Establecer el directorio de trabajo
-WORKDIR /usr/src/server/
+# Compilar tu aplicación dentro del contenedor
+RUN gcc -o /app/server /app/server.c -pthread
 
-# Compilar el programa del servidor
-RUN gcc -o server_program serverTry.c
-
-# Exponer el puerto 8000 para que sea accesible desde fuera del contenedor
+# Exponer el puerto en el que el servidor escucha
 EXPOSE 8000
 
-# Comando por defecto para ejecutar el servidor cuando se inicie el contenedor
-CMD ["./server_program"]
-
+# Comando para ejecutar tu aplicación al iniciar el contenedor
+CMD ["/app/server"]
