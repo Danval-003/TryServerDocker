@@ -90,16 +90,47 @@ int main() {
     uint8_t type = TYPE_A;
     send(clientSocket, (char *)&type, sizeof(uint8_t), 0);
     send(clientSocket, (char *)&sendDataA, sizeof(struct TypeA), 0);
+    // Recibir respuesta del servidor
+    char buffer[1024];
+    int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
+    if (bytesReceived == -1) {
+        perror("Error al recibir respuesta del servidor");
+    } else if (bytesReceived == 0) {
+        printf("Servidor desconectado\n");
+    } else {
+        buffer[bytesReceived] = '\0';
+        printf("Respuesta del servidor: %s\n", buffer);
+    }
 
     // Enviar estructura TypeB al servidor
     type = TYPE_B;
     send(clientSocket, (char *)&type, sizeof(uint8_t), 0);
     send(clientSocket, (char *)&sendDataB, sizeof(struct TypeB), 0);
+    // Recibir respuesta del servidor
+    bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
+    if (bytesReceived == -1) {
+        perror("Error al recibir respuesta del servidor");
+    } else if (bytesReceived == 0) {
+        printf("Servidor desconectado\n");
+    } else {
+        buffer[bytesReceived] = '\0';
+        printf("Respuesta del servidor: %s\n", buffer);
+    }
 
     // Enviar estructura TypeC al servidor
     type = TYPE_C;
     send(clientSocket, (char *)&type, sizeof(uint8_t), 0);
     send(clientSocket, (char *)&sendDataC, sizeof(struct TypeC), 0);
+
+    bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
+    if (bytesReceived == -1) {
+        perror("Error al recibir respuesta del servidor");
+    } else if (bytesReceived == 0) {
+        printf("Servidor desconectado\n");
+    } else {
+        buffer[bytesReceived] = '\0';
+        printf("Respuesta del servidor: %s\n", buffer);
+    }
 
     // Cerrar el socket y liberar la memoria de la información del servidor
     close(clientSocket);

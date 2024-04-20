@@ -64,6 +64,8 @@ void *handleClient(void *arg) {
                 // Copiar los bytes de intBytes de vuelta a restoredInteger
                 memcpy(&dataInt, data.data, sizeof(int));
                 printf("Datos recibidos de TypeA: data1 = %d\n", dataInt);
+                const char *response = "Mensaje recibido correctamente";
+                send(clientSocket, response, strlen(response), 0);
                 break;
             }
             case TYPE_B: {
@@ -80,6 +82,8 @@ void *handleClient(void *arg) {
                 memcpy(&data2, data.data2, sizeof(float));
 
                 printf("Datos recibidos de TypeB: data1 = %f, data2 = %f\n", data1, data2);
+                const char *response = "Mensaje recibido correctamente";
+                send(clientSocket, response, strlen(response), 0);
                 break;
             }
             case TYPE_C: {
@@ -90,6 +94,9 @@ void *handleClient(void *arg) {
                     break;
                 }
                 printf("Datos recibidos de TypeC: data = %s\n", data.data);
+                // Enviar respuesta al cliente
+                const char *response = "Mensaje recibido correctamente";
+                send(clientSocket, response, strlen(response), 0);
                 break;
             }
             default:
